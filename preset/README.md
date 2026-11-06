@@ -25,7 +25,7 @@ preset 默认指向 `$DSH_HOME/cnki-kns`。可以把这个仓库的 `servers/cnk
 ```powershell
 $DSH_HOME = "$env:USERPROFILE\.dsh"
 Copy-Item -Recurse "<repo>\servers\cnki-search" "$DSH_HOME\cnki-kns"
-uv run --directory "$DSH_HOME\cnki-kns" pytest -m "not live" -q
+uv run --directory "$DSH_HOME\cnki-kns" --extra dev pytest -m "not live" -q
 ```
 
 也可以直接指到仓库里（`--cnki-dir <repo>/servers/cnki-search`），省一份副本。

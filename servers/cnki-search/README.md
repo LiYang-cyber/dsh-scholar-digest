@@ -34,8 +34,8 @@ uv run --directory . cnki-search
 ## 测试
 
 ```powershell
-uv run --directory . pytest -m "not live" -q
-$env:RUN_LIVE_CNKI=1; uv run --directory . pytest -m live -s   # 联网回归，按需手动跑
+uv run --directory . --extra dev pytest -m "not live" -q
+$env:RUN_LIVE_CNKI=1; uv run --directory . --extra dev pytest -m live -s   # 联网回归，按需手动跑
 ```
 
 ## 上游与许可

@@ -58,10 +58,10 @@ https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=<dbcode>&filename=<filename>
 
 ```powershell
 # 离线单元测试（含映射规则、fixtures 驱动的解析断言）
-uv run --directory . pytest -m "not live" -q
+uv run --directory . --extra dev pytest -m "not live" -q
 
 # 联网回归
-$env:RUN_LIVE_CNKI=1; uv run --directory . pytest -m live -s
+$env:RUN_LIVE_CNKI=1; uv run --directory . --extra dev pytest -m live -s
 ```
 
 联网回归覆盖四条：检索返回的 `url` 与 `dbcode`+`filename` 自洽、`space_url` 交回
@@ -111,7 +111,7 @@ $env:UV_CACHE_DIR="$env:TEMP\uvcache"; $env:TEMP="$env:TEMP\uvtmp"; $env:TMP=$en
 git clone --depth 1 https://github.com/Biogod2020/cnki-search.git <tmp>
 # 用上游覆盖除 kns.py 之外的文件，再把下列改动重新应用：
 #   parse.py / models.py / service.py / server.py
-uv run --directory . pytest -m "not live" -q
+uv run --directory . --extra dev pytest -m "not live" -q
 ```
 
 映射逻辑本身与上游解耦：如果上游日后自己返回主站链接，`kns.to_kns_url()` 对已是
