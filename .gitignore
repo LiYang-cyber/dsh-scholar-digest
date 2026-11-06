@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.uv-cache/
+
+# Generated process files and full text (never committed)
+_archive/
+PDF/
+*.pdf
+*.caj
+*.nh
+
+# Local caches / deps
+node_modules/
+.agent-state/
+.agent-output/
+.agent-cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Download Papers"
+  short_description: "Research, verify, and package paper metadata and downloads"
+  default_prompt: "Use $download-paper to research this topic, verify identifiers, and create the complete project-local literature delivery package."
+policy:
+  allow_implicit_invocation: true

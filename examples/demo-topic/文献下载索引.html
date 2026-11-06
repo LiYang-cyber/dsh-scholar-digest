@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>文献下载索引 · demo-topic</title>
+<style>
+body{font-family:"Microsoft YaHei",system-ui,sans-serif;margin:24px;background:#f7f8fa;color:#1f2328;line-height:1.6}
+h1{font-size:22px;border-bottom:2px solid #0969da;padding-bottom:8px}
+h2{font-size:17px;margin-top:28px;color:#0969da}
+table{border-collapse:collapse;width:100%;background:#fff;margin-top:8px;font-size:13px}
+th,td{border:1px solid #d0d7de;padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#eef2f6}
+tr:nth-child(even){background:#fafbfc}
+a{color:#0969da;text-decoration:none}
+a:hover{text-decoration:underline}
+.tag{display:inline-block;font-size:11px;padding:1px 6px;border-radius:9px;background:#e8f0fe;color:#0b4f9e;white-space:nowrap}
+.tag.a{background:#e6f4ea;color:#137333}
+.tag.b{background:#e8f0fe;color:#0b4f9e}
+.tag.c{background:#f1f3f4;color:#5f6368}
+.note{background:#fff8e1;border-left:4px solid #f0b429;padding:10px 14px;margin:16px 0;font-size:13px}
+.stat{font-size:13px;background:#fff;border:1px solid #d0d7de;padding:10px 14px;border-radius:6px}
+.src{color:#57606a;font-size:12px}
+</style></head><body>
+<h1>文献下载索引 · demo-topic</h1>
+
+<div class="note">
+<b>使用说明</b><br>
+1. 题名即链接：<span class="tag">DOI</span> 指向 doi.org，<span class="tag">知网主站</span> 指向 kns.cnki.net 记录页（<b>全文需机构账号</b>）；<br>
+2. 本专题未命中 arXiv 条目，<code>批量下载_arXiv.ps1</code> 为契约占位脚本，日后新增 arXiv 条目重跑生成器即可；<br>
+3. 导入 Zotero / EndNote / JabRef：使用同目录 <code>文献清单.ris</code>（全量）与 <code>04_英文文献_仅DOI.bib</code>（仅英文 DOI 部分）；<br>
+4. 质量分级 A/B/C 与相关性标注沿用 <code>02_检索说明与检索式.md</code> 第 4 节规则。
+</div>
+<div class="stat">共 <b>3</b> 条；质量分级 A <b>2</b> / B <b>1</b> / C <b>0</b>；相关性：直接 <b>0</b>、间接 <b>0</b>、背景 <b>0</b>、资源页 <b>0</b>；链接：DOI <b>1</b>、知网主站 <b>1</b>。</div>
+<h2>期刊论文（英文） · 1 条</h2>
+<table><tr><th style='width:38px'>#</th><th>题名</th><th style='width:52px'>年份</th><th style='width:230px'>来源</th><th style='width:150px'>分级 / 相关性</th><th style='width:120px'>主题</th><th style='width:88px'>链接</th></tr>
+<tr><td>1</td><td><a href="https://doi.org/10.9999/example.2023.001" target="_blank">Example Study on Citation-Graph Assisted Screening</a></td><td>2023</td><td class='src'>Example Journal of Literature Engineering</td><td><span class="tag a">A</span> / 高</td><td class='src'>citation graph</td><td><a href="https://doi.org/10.9999/example.2023.001" target="_blank"><span class="tag">DOI</span></a></td></tr>
+</table>
+<h2>期刊论文（中文） · 1 条</h2>
+<table><tr><th style='width:38px'>#</th><th>题名</th><th style='width:52px'>年份</th><th style='width:230px'>来源</th><th style='width:150px'>分级 / 相关性</th><th style='width:120px'>主题</th><th style='width:88px'>链接</th></tr>
+<tr><td>1</td><td><a href="https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&amp;filename=EXAMPLE202401001" target="_blank">示例研究：面向文献工作流的批量汇总方法</a></td><td>2024</td><td class='src'>示例学报</td><td><span class="tag a">A</span> / 高</td><td class='src'>文献工作流</td><td><a href="https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&amp;filename=EXAMPLE202401001" target="_blank"><span class="tag">知网主站</span></a></td></tr>
+</table>
+<h2>会议论文 · 1 条</h2>
+<table><tr><th style='width:38px'>#</th><th>题名</th><th style='width:52px'>年份</th><th style='width:230px'>来源</th><th style='width:150px'>分级 / 相关性</th><th style='width:120px'>主题</th><th style='width:88px'>链接</th></tr>
+<tr><td>1</td><td><a href="https://arxiv.org/abs/2401.99991" target="_blank">示例预印本：可复现的文献交付流水线</a></td><td>2024</td><td class='src'>arXiv preprint</td><td><span class="tag b">B</span> / 中</td><td class='src'>pipeline</td><td><a href="https://arxiv.org/abs/2401.99991" target="_blank"><span class="tag">arXiv</span></a></td></tr>
+</table>
+</body></html>

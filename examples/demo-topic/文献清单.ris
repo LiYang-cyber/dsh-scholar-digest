@@ -1,0 +1,30 @@
+TY  - JOUR
+AU  - 示例作者甲；示例作者乙
+TI  - 示例研究：面向文献工作流的批量汇总方法
+JO  - 示例学报
+PY  - 2024
+UR  - https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&filename=EXAMPLE202401001
+DB  - CNKI
+N1  - 质量分级 A；相关性：高；主题：文献工作流；示例数据：链接与编号均为虚构
+ER  - 
+
+TY  - JOUR
+AU  - Example
+AU  - A.
+AU  - Sample
+AU  - B.
+TI  - Example Study on Citation-Graph Assisted Screening
+JO  - Example Journal of Literature Engineering
+PY  - 2023
+UR  - https://doi.org/10.9999/example.2023.001
+N1  - 质量分级 A；相关性：高；主题：citation graph；示例数据：DOI 为虚构
+ER  - 
+
+TY  - CPAPER
+AU  - 示例作者丙
+TI  - 示例预印本：可复现的文献交付流水线
+T2  - arXiv preprint
+PY  - 2024
+UR  - https://arxiv.org/abs/2401.99991
+N1  - 质量分级 B；相关性：中；主题：pipeline；示例数据：arXiv ID 为虚构
+ER  - 
