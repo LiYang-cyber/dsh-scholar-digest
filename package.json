@@ -1,0 +1,59 @@
+{
+  "name": "dsh-scholar-digest",
+  "version": "0.1.0",
+  "description": "Academic research agent preset and download-paper skill for DeepSeek Harness: multi-source literature retrieval (CNKI, arXiv, PubMed, Semantic Scholar) and a reproducible five-piece delivery (HTML index, XLSX, BibTeX, RIS, arXiv download script).",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "lib/**/*.js",
+    "skills/**",
+    "servers/cnki-search/src/**",
+    "servers/cnki-search/pyproject.toml",
+    "servers/cnki-search/uv.lock",
+    "servers/cnki-search/LICENSE",
+    "servers/cnki-search/README.md",
+    "servers/cnki-search/CHANGES.md",
+    "locale/*.json",
+    "icon.svg",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "agent-preset",
+    "skill",
+    "literature",
+    "literature-review",
+    "cnki",
+    "arxiv",
+    "pubmed",
+    "semantic-scholar",
+    "bibtex",
+    "ris"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiYang-cyber/dsh-scholar-digest.git"
+  },
+  "homepage": "https://github.com/LiYang-cyber/dsh-scholar-digest#readme",
+  "bugs": {
+    "url": "https://github.com/LiYang-cyber/dsh-scholar-digest/issues"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

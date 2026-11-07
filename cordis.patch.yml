@@ -1,0 +1,19 @@
+# Bundle patch for dsh-scholar-digest.
+#
+# One row mounts lib/index.js, which on apply():
+#   - registers a skill provider serving skills/download-paper/SKILL.md, so the
+#     skill is in the agent catalog with no copy step;
+#   - registers the `academic` agent preset (persona + tools + literature MCP
+#     servers), with the bundled CNKI server path resolved from the package.
+#
+# Install:
+#   dsh plugin --profile <name> add github:LiYang-cyber/dsh-scholar-digest
+#   dsh plugin --profile <name> add link:D:\path\to\dsh-scholar-digest
+#
+# Remove:
+#   dsh plugin --profile <name> remove dsh-scholar-digest
+#
+# The inserted `name` must match the installed package name exactly.
+- insert:
+    - id: dsh-scholar-digest
+      name: dsh-scholar-digest
