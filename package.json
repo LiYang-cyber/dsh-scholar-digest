@@ -1,6 +1,6 @@
 {
   "name": "dsh-scholar-digest",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Academic research agent preset and download-paper skill for DeepSeek Harness: multi-source literature retrieval (CNKI, arXiv, PubMed, Semantic Scholar) and a reproducible five-piece delivery (HTML index, XLSX, BibTeX, RIS, arXiv download script).",
   "type": "module",
   "main": "lib/index.js",
@@ -40,7 +40,8 @@
     "ris"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "dsh": ">=0.2.2-rc.1 <0.3.0-0"
   },
   "license": "MIT",
   "repository": {
@@ -54,6 +55,11 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.2-rc.1+": "compatible"
+      }
     }
   }
 }
