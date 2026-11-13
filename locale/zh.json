@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "文献汇总（学术研究）",
-    "description": "学术研究 preset 与文献交付技能：从知网、arXiv、PubMed、Semantic Scholar 检索，交付可离线浏览的 HTML 索引与 XLSX、BibTeX、RIS、arXiv 下载脚本。"
+    "description": "补齐用 Agent 批量检索知网文献的缺口：学术研究 preset 从知网空间取题录，服务端把链接换算成可打开的 kns.cnki.net 主站页，并用 arXiv、PubMed、Semantic Scholar 覆盖英文文献；download-paper 技能把结果整理成离线 HTML 索引、XLSX 总表、BibTeX、RIS 与 arXiv 下载脚本。"
   }
 }

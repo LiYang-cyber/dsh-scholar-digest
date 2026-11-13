@@ -1,7 +1,7 @@
 {
   "name": "dsh-scholar-digest",
-  "version": "0.1.1",
-  "description": "Academic research agent preset and download-paper skill for DeepSeek Harness: multi-source literature retrieval (CNKI, arXiv, PubMed, Semantic Scholar) and a reproducible five-piece delivery (HTML index, XLSX, BibTeX, RIS, arXiv download script).",
+  "version": "0.1.2",
+  "description": "Closes the gap in batch-searching CNKI (知网) literature with an agent: an academic research preset for DeepSeek Harness that maps CNKI Space metadata links to openable kns.cnki.net pages and adds arXiv, PubMed and Semantic Scholar, plus the download-paper skill that produces one topic directory with an offline HTML index, XLSX table, BibTeX, RIS and an arXiv download script.",
   "type": "module",
   "main": "lib/index.js",
   "exports": {

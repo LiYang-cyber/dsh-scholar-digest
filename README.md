@@ -1,8 +1,8 @@
 # dsh-scholar-digest
 
-> 给 DeepSeek Harness 的学术研究 agent preset + 文献交付技能：多源检索 → 核验去重 → HTML / XLSX / BibTeX / RIS / arXiv 脚本五件套。
+> 补齐「用 Agent 批量检索知网文献」这一环：学术研究 preset 从知网空间取题录并在服务端换算成可打开的主站链接，配上英文文献源与一套可交付的文献汇总。
 >
-> An agent preset and skill pair for DeepSeek Harness: multi-source literature retrieval, verified metadata, and a reproducible five-piece offline deliverable. CNKI (知网) links are mapped from 知网空间 to the download-capable main site server-side, so no browser login or redirect userscript is involved.
+> Closes the gap in batch-searching CNKI (知网) literature with an agent: an academic research preset that maps CNKI Space links to openable main-site pages server-side, plus English-language sources and a reproducible literature deliverable.
 
 [安装](#安装) · [工作流](#工作流) · [目录](#目录结构) · [示例](examples/README.md) · [English](#english)
 
@@ -10,7 +10,7 @@
 
 **一个插件，两件东西：**
 
-- **「学术研究」agent preset**：学术 persona + 文献数据源（CNKI 主站链接映射、arXiv、PubMed / Europe PMC、Semantic Scholar）+ 常规文件/搜索/网页/任务工具。新建会话时在 preset 选择器里选它。
+- **「学术研究」agent preset**：补上「Agent 没法批量查知网」这个缺口——从知网空间公开接口批量取题录，服务端把每条链接换算成 `kns.cnki.net` 主站文献页，不需要登录态、不需要浏览器跳转脚本（全文能否打开取决于机构权限）；同时挂上 arXiv、PubMed / Europe PMC、Semantic Scholar 三个英文文献源，以及常规文件/搜索/网页/任务工具。新建会话时在 preset 选择器里选它。
 - **`download-paper` skill**：规定「一个专题 = 一个交付目录」，把检索结果整理成可离线浏览的 **HTML 索引**、**xlsx 总表**、**BibTeX**、**RIS**、**arXiv 批量下载脚本**，并带来源追溯与交付自检。
 
 CNKI 服务端（本仓库 `servers/cnki-search`）随插件一起安装，路径由插件在运行时解析，不需要你手动配置目录。

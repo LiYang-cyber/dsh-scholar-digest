@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Scholar digest",
-    "description": "Academic research preset and literature delivery skill: CNKI, arXiv, PubMed and Semantic Scholar retrieval, then an offline HTML index with XLSX, BibTeX, RIS and an arXiv download script."
+    "description": "Closes the gap in batch-searching CNKI literature with an agent: the academic research preset reads CNKI Space metadata, maps each link to the openable kns.cnki.net page server-side, and adds arXiv, PubMed and Semantic Scholar for English literature; the download-paper skill packages a topic into an offline HTML index, XLSX table, BibTeX, RIS and an arXiv download script."
   }
 }
