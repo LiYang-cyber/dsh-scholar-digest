@@ -342,23 +342,78 @@ def build_preset(block: list[str], cnki_dir: Path, skill_dir: Path | None,
         raise SystemExit("tool-plugin-manager row not found; dump changed?")
 
     if skill_dir is not None:
-        text, n = re.subn(
-            r"^(\s*)- id: skill-filesystem\n(\s*)name: '@deepseek-ai/dsh-skill-filesystem'\n",
-            lambda m: (
-                f"{m.group(1)}- id: skill-filesystem\n"
-                f"{m.group(2)}name: '@deepseek-ai/dsh-skill-filesystem'\n"
-                f"{m.group(2)}config:\n"
-                f"{m.group(2)}  customSkillDirs:\n"
-                f"{m.group(2)}    - {q(skill_dir)}\n"
-            ),
-            text,
-            count=1,
-            flags=re.M,
-        )
-        if n != 1:
-            raise SystemExit("skill-filesystem row not found; dump changed?")
+        text = add_custom_skill_dir(text, skill_dir)
 
     return text + "\n" + mcp_plugins(cnki_dir, academic_search_dir).rstrip("\n") + "\n"
+
+
+def add_custom_skill_dir(text: str, skill_dir: Path) -> str:
+    """Append one directory to the preset's skill-filesystem customSkillDirs.
+
+    preset-standard 0.2.2-rc.3 ships its own customSkillDirs entry (a `!!js`
+    expression pointing at the bundled skills inside dsh-agent-preset), so the
+    row may already have a config block. Append to that list instead of adding
+    a second `config:` key, which YAML would treat as a duplicate.
+    """
+    lines = text.splitlines()
+    start = next(
+        i for i, line in enumerate(lines) if re.match(r"^(\s*)- id: skill-filesystem$", line)
+    )
+    row_indent = len(lines[start]) - len(lines[start].lstrip())
+    end = start + 1
+    while end < len(lines):
+        if lines[end].strip() == "":
+            end += 1
+            continue
+        indent = len(lines[end]) - len(lines[end].lstrip())
+        if indent <= row_indent:
+            break
+        end += 1
+
+    block = lines[start:end]
+    if any(q(skill_dir) in line for line in block):
+        return text
+
+    for j, line in enumerate(block):
+        match = re.match(r"^(\s*)customSkillDirs:\s*$", line)
+        if match is None:
+            continue
+        dir_indent = len(match.group(1))
+        # The list ends at the first following line at or above the key's own
+        # indent. Inserting there keeps multi-line items (the standard ships a
+        # folded `!!js` expression) intact.
+        k = j + 1
+        while k < len(block):
+            if block[k].strip() == "":
+                k += 1
+                continue
+            indent = len(block[k]) - len(block[k].lstrip())
+            if indent <= dir_indent:
+                break
+            k += 1
+        block.insert(k, f'{" " * (dir_indent + 2)}- {q(skill_dir)}')
+        lines[start:end] = block
+        return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+
+    for j, line in enumerate(block):
+        match = re.match(r"^(\s*)config:\s*$", line)
+        if match is None:
+            continue
+        config_indent = len(match.group(1))
+        block[end - start : end - start] = [
+            f'{" " * (config_indent + 2)}customSkillDirs:',
+            f'{" " * (config_indent + 4)}- {q(skill_dir)}',
+        ]
+        lines[start:end] = block
+        return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+
+    block[1:1] = [
+        f'{" " * (row_indent + 2)}config:',
+        f'{" " * (row_indent + 4)}customSkillDirs:',
+        f'{" " * (row_indent + 6)}- {q(skill_dir)}',
+    ]
+    lines[start:end] = block
+    return "\n".join(lines) + ("\n" if text.endswith("\n") else "")
 
 
 def validate_prompt_variables(text: str) -> None:

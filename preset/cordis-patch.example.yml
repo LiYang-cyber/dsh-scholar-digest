@@ -51,6 +51,12 @@
             name: '@deepseek-ai/dsh-tool-schedule'
           - id: skill-filesystem
             name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - !!js >-
+                  process.getBuiltinModule('node:path').join(process.getBuiltinModule('node:path').dirname(process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('@deepseek-ai/dsh-agent-preset/package.json')),
+                  'skills')
+                - "C:/Users/you/.dsh/skills"
           - id: tool-skill
             name: '@deepseek-ai/dsh-tool-skill'
           - id: command-goal
@@ -143,6 +149,8 @@
             config:
               - id: tool-subagent-control
                 name: '@deepseek-ai/dsh-tool-subagent-control'
+                config:
+                  interrupt: false
               - id: tool-subagent
                 name: '@deepseek-ai/dsh-tool-subagent'
                 config:
@@ -174,6 +182,8 @@
               searchTimeoutMs: 60000
           - id: present
             name: '@deepseek-ai/dsh-tool-present'
+          - id: tool-office
+            name: '@deepseek-ai/dsh-tool-office'
           - id: tool-plugin-manager
             name: '@deepseek-ai/dsh-plugin-manager/tools'
             disabled: true  # academic sessions do not install plugins on the model's behalf
@@ -260,5 +270,25 @@
                 - semantic-scholar-mcp
               env: !!js 'process.env.SEMANTIC_SCHOLAR_API_KEY ? { SEMANTIC_SCHOLAR_API_KEY: process.env.SEMANTIC_SCHOLAR_API_KEY } : {}'
               toolCallTimeoutMs: 60000
+              failOnStartupError: false
+          # --- nature-academic-search ----------------------------------
+          # Optional. Unified CrossRef / PubMed / arXiv / Scopus / ScienceDirect
+          # search from https://github.com/Yuan1z0825/nature-skills, run from its
+          # own .venv (no package pull at startup). Pass
+          # --academic-search-dir to enable; the server must import utils and
+          # sources as top-level modules, hence cwd.
+          - id: mcp-academic-search
+            name: '@deepseek-ai/dsh-mcp-client'
+            config:
+              serverName: academic-search
+              transport: stdio
+              command: "C:/Users/you/.dsh/skills/nature-academic-search/mcp-server/.venv/Scripts/python.exe"
+              args:
+                - academic_search_server.py
+              cwd: "C:/Users/you/.dsh/skills/nature-academic-search/mcp-server"
+              env: !!js 'Object.fromEntries(Object.entries({ PUBMED_EMAIL: process.env.PUBMED_EMAIL, NCBI_API_KEY: process.env.NCBI_API_KEY }).filter(([, v]) => Boolean(v)))'
+              # CrossRef/PubMed/arXiv run concurrently; one slow source (arXiv
+              # API in practice) gates the whole call, so allow more time.
+              toolCallTimeoutMs: 120000
               failOnStartupError: false
 # <<< preset-academic <<<

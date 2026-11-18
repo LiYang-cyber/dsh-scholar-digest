@@ -11,9 +11,10 @@
 **一个插件，两件东西：**
 
 - **「学术研究」agent preset**：补上「Agent 没法批量查知网」这个缺口——从知网空间公开接口批量取题录，服务端把每条链接换算成 `kns.cnki.net` 主站文献页，不需要登录态、不需要浏览器跳转脚本（全文能否打开取决于机构权限）；同时挂上 arXiv、PubMed / Europe PMC、Semantic Scholar 三个英文文献源，以及常规文件/搜索/网页/任务工具。新建会话时在 preset 选择器里选它。
+- **可选的第五个源**：如果本机装了 [nature-academic-search](https://github.com/Yuan1z0825/nature-skills) 的 MCP server（`$DSH_HOME/skills/nature-academic-search/mcp-server`），插件会自动挂上它的 CrossRef / Scopus / ScienceDirect 统一检索，persona 的工具清单也会同步提到它；没装就跳过这一行。路径可用 `DSH_ACADEMIC_SEARCH_DIR` 覆盖。
 - **`download-paper` skill**：规定「一个专题 = 一个交付目录」，把检索结果整理成可离线浏览的 **HTML 索引**、**xlsx 总表**、**BibTeX**、**RIS**、**arXiv 批量下载脚本**，并带来源追溯与交付自检。
 
-CNKI 服务端（本仓库 `servers/cnki-search`）随插件一起安装，路径由插件在运行时解析，不需要你手动配置目录。
+CNKI 服务端（本仓库 `servers/cnki-search`）随插件一起安装，路径由插件在运行时解析，不需要你手动配置目录；preset 同时把 `$DSH_HOME/skills` 注册为技能根目录，与你本地手写 preset 的行为一致。
 
 ## 安装
 
@@ -115,19 +116,23 @@ uv run --with openpyxl python skills/download-paper/build_delivery.py examples/d
 
 ## 兼容性与维护
 
-- **宿主要求**：`engines.dsh = ">=0.2.2-rc.1 <0.3.0-0"`，并在 `dsh.compatibility.dshReleases` 里声明 `0.2.2-rc.1+` 兼容。插件只依赖 Host 服务（`ctx.skills`、`ctx.agentPresets`）与 Node 内置模块，不引入额外运行时依赖；preset 行清单来自 0.2.2-rc.1 的 `preset-standard`，更旧的 0.2.x 上 preset 可能挂不起来。
-- 在 **DSH 0.2.2-rc.1 + Windows** 上实测。DSH 升级后重新生成 `lib/preset.js`：
+- **宿主要求**：`engines.dsh = ">=0.2.2-rc.1 <0.3.0-0"`，并在 `dsh.compatibility.dshReleases` 里声明 `0.2.2-rc.1+` 兼容。插件只依赖 Host 服务（`ctx.skills`、`ctx.agentPresets`）与 Node 内置模块，不引入额外运行时依赖；preset 行清单来自安装时 DSH 的 `preset-standard`（当前版本按 0.2.2-rc.3 生成，含 `tool-office` 等新行），更旧的 0.2.x 上 preset 可能挂不起来。
+- 在 **DSH 0.2.2-rc.3 + Windows** 上实测。DSH 升级后重新生成 `lib/preset.js`：
 
 ```powershell
-python .\preset\gen-preset.py --from-cli --cnki-dir "C:/Users/you/.dsh/cnki-kns" --out .\preset\cordis-patch.example.yml
-uv run --with pyyaml python .\preset\build-preset-module.py .\preset\cordis-patch.example.yml .\lib\preset.js 0.2.2-rc.1
+python .\preset\gen-preset.py --from-cli `
+  --cnki-dir "C:/Users/you/.dsh/cnki-kns" `
+  --academic-search-dir "C:/Users/you/.dsh/skills/nature-academic-search/mcp-server" `
+  --skill-dir "C:/Users/you/.dsh/skills" `
+  --out .\preset\cordis-patch.example.yml
+uv run --with pyyaml python .\preset\build-preset-module.py .\preset\cordis-patch.example.yml .\lib\preset.js 0.2.2-rc.3
 ```
 
 - CNKI 服务端自带测试：`uv run --directory .\servers\cnki-search --extra dev pytest -m "not live" -q`。
 
 ## 已知限制
 
-- preset 定义在宿主启动时 eager 挂载，四个文献 MCP 进程随应用常驻，与是否选中该 preset 无关。
+- preset 定义在宿主启动时 eager 挂载，四到五个文献 MCP 进程随应用常驻，与是否选中该 preset 无关。
 - 知网服务端走知网空间公开接口：覆盖空间题录，不是 KNS 全部馆藏；`kind=thesis` 等上游既有缺陷见 [servers/cnki-search/CHANGES.md](servers/cnki-search/CHANGES.md)。
 - 全文能否打开取决于机构 IP 或登录状态；本项目不处理登录态。
 - 只在 Windows 上实测；脚本参数与路径按跨平台写，其他平台未验证。
@@ -153,8 +158,8 @@ uv run --with pyyaml python .\preset\build-preset-module.py .\preset\cordis-patc
 
 ## English
 
-`dsh-scholar-digest` is a DeepSeek Harness plugin that ships two things: an **academic research preset** (academic persona plus four literature MCP sources, where the bundled CNKI server maps 知网空间 metadata links to the `kns.cnki.net` page institutional users can actually open) and the **`download-paper` skill** (turn a search topic into one delivery directory: offline HTML index, XLSX table, BibTeX, RIS, and an arXiv batch-download script, all from one normalized record set).
+`dsh-scholar-digest` is a DeepSeek Harness plugin that ships two things: an **academic research preset** (academic persona plus four literature MCP sources — CNKI with server-side link mapping to the openable `kns.cnki.net` page, arXiv, PubMed and Semantic Scholar — and, when the [nature-academic-search](https://github.com/Yuan1z0825/nature-skills) server is installed locally, its CrossRef/Scopus/ScienceDirect source as a fifth) and the **`download-paper` skill** (turn a search topic into one delivery directory: offline HTML index, XLSX table, BibTeX, RIS, and an arXiv batch-download script, all from one normalized record set).
 
-Install: `dsh plugin --profile desktop add dsh-scholar-digest` (npm) or `dsh plugin --profile desktop add github:LiYang-cyber/dsh-scholar-digest`. Host requirement: DSH `>=0.2.2-rc.1 <0.3.0-0` (`engines.dsh`), plus `uv` and Node.js; tested on Windows with 0.2.2-rc.1.
+Install: `dsh plugin --profile desktop add dsh-scholar-digest` (npm) or `dsh plugin --profile desktop add github:LiYang-cyber/dsh-scholar-digest`. Host requirement: DSH `>=0.2.2-rc.1 <0.3.0-0` (`engines.dsh`), plus `uv` and Node.js; tested on Windows with 0.2.2-rc.3.
 
 Scope: retrieval and packaging only. It does not automate full-text downloads, does not manage login state, and does not bypass access controls. MIT licensed; the CNKI server is a fork of [Biogod2020/cnki-search](https://github.com/Biogod2020/cnki-search) (MIT).

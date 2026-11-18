@@ -3,16 +3,22 @@
 
 The academic preset is derived from the installed DSH's `preset-standard` by
 `gen-preset.py`. This script turns the generated YAML block into the JS module a
-bundle can import, because a bundle must compute one path at runtime (the CNKI
-server shipped inside the package) and evaluate two platform/environment
-expressions in the host process rather than in YAML.
+bundle can import, because the bundle supplies file-system paths at runtime
+(its own CNKI server, the optional nature-academic-search server, and the user
+skill root) and evaluates the platform/env expressions in the host process.
 
-    uv run --with pyyaml python preset/build-preset-module.py \
+    # regenerate the YAML first (paths here are placeholders, not real ones)
+    python preset/gen-preset.py --from-cli \\
+        --cnki-dir "C:/Users/you/.dsh/cnki-kns" \\
+        --academic-search-dir "C:/Users/you/.dsh/skills/nature-academic-search/mcp-server" \\
+        --skill-dir "C:/Users/you/.dsh/skills" \\
+        --out preset/cordis-patch.example.yml
+
+    uv run --with pyyaml python preset/build-preset-module.py \\
         preset/cordis-patch.example.yml lib/preset.js
 
-Everything else is copied verbatim: plugin rows, ids, config values, and the
-persona text. The CNKI directory string in the generated patch is replaced by
-the `cnkiDir` argument; `!!js` scalars become plain JS expressions.
+Plugin rows, ids and config values are copied verbatim. Four path values become
+function arguments, and `!!js` scalars become plain JS expressions.
 """
 
 from __future__ import annotations
@@ -25,6 +31,11 @@ from pathlib import Path
 import yaml
 
 CNKI_PLACEHOLDER = "C:/Users/you/.dsh/cnki-kns"
+ACADEMIC_SEARCH_PLACEHOLDER = "C:/Users/you/.dsh/skills/nature-academic-search/mcp-server"
+ACADEMIC_SEARCH_PYTHON_PLACEHOLDER = (
+    ACADEMIC_SEARCH_PLACEHOLDER + "/.venv/Scripts/python.exe"
+)
+SKILL_DIR_PLACEHOLDER = "C:/Users/you/.dsh/skills"
 
 IDENTIFIER = re.compile(r"^[A-Za-z_$][A-Za-z0-9_$]*$")
 
@@ -44,16 +55,25 @@ HEADER = """\
 //
 // Source: preset-standard of DSH {version}, via preset/cordis-patch.example.yml.
 // Re-derive after a DSH upgrade:
-//   python preset/gen-preset.py --from-cli --cnki-dir "{placeholder}" \\
+//   python preset/gen-preset.py --from-cli \\
+//       --cnki-dir "{cnki}" \\
+//       --academic-search-dir "{academic}" \\
+//       --skill-dir "{skill}" \\
 //       --out preset/cordis-patch.example.yml
 //   uv run --with pyyaml python preset/build-preset-module.py \\
 //       preset/cordis-patch.example.yml lib/preset.js
 //
-// The returned rows are mounted into an agent preset by lib/index.js, which
-// fills in the one runtime path (the CNKI server shipped inside this package)
-// and lets the JsExpr values evaluate in the host process.
+// lib/index.js supplies the four path arguments at runtime and filters the
+// academic-search row when that server is not installed. `!!js` values from
+// the example (the platform checks and the Semantic Scholar env) are emitted as
+// plain expressions and evaluated in the host process.
 
-export function buildPresetPlugins({{ cnkiDir }}) {{
+export function buildPresetPlugins({{
+  cnkiDir,
+  academicSearchDir,
+  academicSearchPython,
+  skillDir,
+}}) {{
   return """
 
 
@@ -62,8 +82,14 @@ def render(value, indent):
     if isinstance(value, JsExpr):
         return value
     if isinstance(value, str):
+        if value == ACADEMIC_SEARCH_PYTHON_PLACEHOLDER:
+            return "academicSearchPython"
+        if value == ACADEMIC_SEARCH_PLACEHOLDER:
+            return "academicSearchDir"
         if value == CNKI_PLACEHOLDER:
             return "cnkiDir"
+        if value == SKILL_DIR_PLACEHOLDER:
+            return "skillDir"
         return json.dumps(value, ensure_ascii=False)
     if isinstance(value, bool):
         return "true" if value else "false"
@@ -87,19 +113,40 @@ def render(value, indent):
     raise TypeError(f"unsupported YAML value: {value!r}")
 
 
+def normalize_skill_filesystem(plugins):
+    """Keep only the caller's skill root on the preset's skill-filesystem.
+
+    preset-standard 0.2.2-rc.3 ships a `!!js` expression that resolves the
+    bundled skills relative to the loader's baseUrl. That expression cannot run
+    from this generated module (no baseUrl in scope), and the academic preset
+    wants the user skill root anyway, so the row is pinned to `skillDir`.
+    """
+    for row in plugins:
+        if row.get("id") == "skill-filesystem":
+            row["config"] = {"customSkillDirs": [SKILL_DIR_PLACEHOLDER]}
+
+
 def main() -> int:
     source = Path(sys.argv[1])
     target = Path(sys.argv[2])
-    version = sys.argv[3] if len(sys.argv) > 3 else "0.2.2-rc.1"
+    version = sys.argv[3] if len(sys.argv) > 3 else "0.2.2-rc.3"
 
     doc = yaml.safe_load(source.read_text(encoding="utf-8-sig"))
     entries = next(row for row in doc if isinstance(row, dict) and "insert" in row)["insert"]
     preset = next(row for row in entries if row.get("id") == "preset-academic")
     plugins = preset["config"]["plugins"]
+    normalize_skill_filesystem(plugins)
 
     body = render(plugins, 2)
     target.write_text(
-        HEADER.format(version=version, placeholder=CNKI_PLACEHOLDER) + body + ";\n}\n",
+        HEADER.format(
+            version=version,
+            cnki=CNKI_PLACEHOLDER,
+            academic=ACADEMIC_SEARCH_PLACEHOLDER,
+            skill=SKILL_DIR_PLACEHOLDER,
+        )
+        + body
+        + ";\n}\n",
         encoding="utf-8",
     )
     print(f"wrote {target} ({len(target.read_text(encoding='utf-8').splitlines())} lines)")
