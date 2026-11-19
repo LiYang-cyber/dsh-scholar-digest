@@ -10,8 +10,8 @@
 
 **一个插件，两件东西：**
 
-- **「学术研究」agent preset**：补上「Agent 没法批量查知网」这个缺口——从知网空间公开接口批量取题录，服务端把每条链接换算成 `kns.cnki.net` 主站文献页，不需要登录态、不需要浏览器跳转脚本（全文能否打开取决于机构权限）；同时挂上 arXiv、PubMed / Europe PMC、Semantic Scholar 三个英文文献源，以及常规文件/搜索/网页/任务工具。新建会话时在 preset 选择器里选它。
-- **可选的第五个源**：如果本机装了 [nature-academic-search](https://github.com/Yuan1z0825/nature-skills) 的 MCP server（`$DSH_HOME/skills/nature-academic-search/mcp-server`），插件会自动挂上它的 CrossRef / Scopus / ScienceDirect 统一检索，persona 的工具清单也会同步提到它；没装就跳过这一行。路径可用 `DSH_ACADEMIC_SEARCH_DIR` 覆盖。
+- **「学术研究」agent preset**：补上「Agent 没法批量查知网」这个缺口——从知网空间公开接口批量取题录，服务端把每条链接换算成 `kns.cnki.net` 主站文献页，不需要登录态、不需要浏览器跳转脚本（全文能否打开取决于机构权限）；同时挂上 arXiv、PubMed / Europe PMC 两个英文文献源（配置 `SEMANTIC_SCHOLAR_API_KEY` 后再加上 Semantic Scholar），以及常规文件/搜索/网页/任务工具。新建会话时在 preset 选择器里选它。
+- **可选的第五个源**：如果本机装了 [nature-academic-search](https://github.com/Yuan1z0825/nature-skills) 的 MCP server（`$DSH_HOME/skills/nature-academic-search/mcp-server`，且 `.venv` 已建好），插件会自动挂上它的 CrossRef / Scopus / ScienceDirect 统一检索，persona 的工具清单也会同步提到它；没装就跳过这一行。路径可用 `DSH_ACADEMIC_SEARCH_DIR` 覆盖。Semantic Scholar 默认不挂载（匿名池限流），设置 `SEMANTIC_SCHOLAR_API_KEY` 后自动启用。
 - **`download-paper` skill**：规定「一个专题 = 一个交付目录」，把检索结果整理成可离线浏览的 **HTML 索引**、**xlsx 总表**、**BibTeX**、**RIS**、**arXiv 批量下载脚本**，并带来源追溯与交付自检。
 
 CNKI 服务端（本仓库 `servers/cnki-search`）随插件一起安装，路径由插件在运行时解析，不需要你手动配置目录；preset 同时把 `$DSH_HOME/skills` 注册为技能根目录，与你本地手写 preset 的行为一致。
@@ -130,11 +130,22 @@ uv run --with pyyaml python .\preset\build-preset-module.py .\preset\cordis-patc
 
 - CNKI 服务端自带测试：`uv run --directory .\servers\cnki-search --extra dev pytest -m "not live" -q`。
 
+## 文献通道与依赖
+
+| 通道 | 挂载条件 | 说明 |
+|---|---|---|
+| CNKI | 始终 | 随包提供；匿名题录接口，学位论文摘要需登录，全文取决于机构权限 |
+| arXiv | 始终 | `uvx arxiv-mcp-server`，开放全文与章节级阅读 |
+| PubMed / Europe PMC | 始终 | `npx` 启动；可设 `PUBMED_EMAIL`、`NCBI_API_KEY` 提高配额 |
+| Semantic Scholar | 设置 `SEMANTIC_SCHOLAR_API_KEY` 时 | 匿名池长期限流，默认不挂载；确需匿名可设 `DSH_SEMANTIC_SCHOLAR_ANONYMOUS=1` |
+| nature-academic-search（可选） | 检测到 `$DSH_HOME/skills/nature-academic-search/mcp-server` 且其 `.venv` 存在 | 提供 CrossRef / PubMed / arXiv 统一检索；Scopus / ScienceDirect 另需本机 `pybliometrics` 配置，未配置时该源在返回的 `errors` 字段报错 |
+| `web_search` / `read_page` | 宿主 profile 的 `@liustack/modsearch` 插件 | 该插件需从 npm 安装（`@liustack/modsearch`，带 `dist/main.js`）；从 GitHub 源码安装时缺构建产物，调用会报 `dist/main.js missing`，与本插件无关 |
+
 ## 已知限制
 
-- preset 定义在宿主启动时 eager 挂载，四到五个文献 MCP 进程随应用常驻，与是否选中该 preset 无关。
+- preset 定义在宿主启动时 eager 挂载，随时可用的文献 MCP 进程随应用常驻，与是否选中该 preset 无关。
 - 知网服务端走知网空间公开接口：覆盖空间题录，不是 KNS 全部馆藏；`kind=thesis` 等上游既有缺陷见 [servers/cnki-search/CHANGES.md](servers/cnki-search/CHANGES.md)。
-- 全文能否打开取决于机构 IP 或登录状态；本项目不处理登录态。
+- 全文能否打开取决于机构 IP 或登录状态；出版商页面（IEEE / Wiley / MDPI 等）返回 403 属付费墙或反爬，是这套半自动路线的正常边界，本项目不绕过。
 - 只在 Windows 上实测；脚本参数与路径按跨平台写，其他平台未验证。
 
 ## 合规
