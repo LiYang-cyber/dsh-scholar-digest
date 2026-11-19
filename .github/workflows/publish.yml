@@ -1,0 +1,28 @@
+name: Publish to npm
+
+# Trusted publishing (OIDC): npm trusts this workflow file, so no token is
+# stored anywhere. Configure it once under the package's "Trusted Publishers"
+# settings on npmjs.com (owner: LiYang-cyber, repo: dsh-scholar-digest,
+# workflow: publish.yml), then run this workflow to publish the version in
+# package.json.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+      - name: Use a recent npm (trusted publishing needs >= 11.5)
+        run: npm install -g npm@12
+      - name: Publish
+        run: npm publish --provenance --access public
